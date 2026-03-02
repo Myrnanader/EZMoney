@@ -1,0 +1,24 @@
+flutter_native_splash:
+
+  # ========= MAIN SPLASH =========
+  color: "#0D1B2A"
+  color_dark: "#0D1B2A"
+
+  image: assets/images/wallet.png
+  image_dark: assets/images/wallet.png
+
+  fullscreen: true
+
+  android: true
+  ios: true
+
+  # ========= ANDROID 12+ =========
+  android_12:
+    color: "#0D1B2A"
+    color_dark: "#0D1B2A"
+
+    image: assets/images/wallet.png
+    image_dark: assets/images/wallet.png
+
+    icon_background_color: "#0D1B2A"
+    icon_background_color_dark: "#0D1B2A"
