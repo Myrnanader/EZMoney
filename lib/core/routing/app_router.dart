@@ -1,65 +1,104 @@
-import 'package:e_wallet/core/routing/go_router_refresh_stream.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_wallet/features/auth/presentation/pages/password_reset_success_page.dart';
+import 'package:e_wallet/features/auth/presentation/pages/register_page.dart';
+import 'package:e_wallet/features/auth/presentation/pages/set_pin_page.dart';
+import 'package:e_wallet/features/auth/presentation/pages/verify_identity_page.dart';
+import 'package:e_wallet/features/auth/presentation/pages/wallet_ready_page.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/app/presentation/cubit/app_cubit.dart';
-import '../../features/app/presentation/cubit/app_state.dart';
-
-import '../../features/splash/presentation/pages/splash_screen.dart';
+import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/onboarding/presentation/pages/welcome_page.dart';
+
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/pages/otp_page.dart';
+import '../../features/auth/presentation/pages/reset_password_page.dart';
 
 import 'route_paths.dart';
-import 'route_names.dart';
 
 class AppRouter {
-  static GoRouter createRouter(BuildContext context) {
-    final appCubit = context.read<AppCubit>();
 
-    return GoRouter(
-      initialLocation: RoutePaths.splash,
+  static final router = GoRouter(
 
-      refreshListenable: GoRouterRefreshStream(appCubit.stream),
+    initialLocation: RoutePaths.splash,
 
-      redirect: (context, state) {
-        final status = appCubit.state.status;
-        final location = state.matchedLocation;
+    routes: [
 
-        if (status == AppStatus.initial) {
-          return RoutePaths.splash;
-        }
+      /// Splash
+      GoRoute(
+        path: RoutePaths.splash,
+        builder: (context, state) => const SplashPage(),
+      ),
 
-        if (status == AppStatus.authenticated &&
-            location != RoutePaths.home) {
-          return RoutePaths.home;
-        }
+      /// Welcome
+      GoRoute(
+        path: RoutePaths.welcome,
+        builder: (context, state) => const WelcomePage(),
+      ),
 
-        if (status == AppStatus.unauthenticated &&
-            location != RoutePaths.onboarding) {
-          return RoutePaths.onboarding;
-        }
+      /// Onboarding
+      GoRoute(
+        path: RoutePaths.onboarding,
+        builder: (context, state) => const OnboardingPage(),
+      ),
 
-        return null;
-      },
+      /// Login
+      GoRoute(
+        path: RoutePaths.login,
+        builder: (context, state) => LoginPage(),
+      ),
 
-      routes: [
-        GoRoute(
-          path: RoutePaths.splash,
-          name: RouteNames.splash,
-          builder: (context, state) => const SplashScreen(),
-        ),
-        GoRoute(
-          path: RoutePaths.onboarding,
-          name: RouteNames.onboarding,
-          builder: (context, state) => const OnboardingPage(),
-        ),
-        GoRoute(
-          path: RoutePaths.home,
-          name: RouteNames.home,
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text("Home"))),
-        ),
-      ],
-    );
-  }
+      
+
+      /// Forgot Password
+      GoRoute(
+        path: RoutePaths.forgotPassword,
+        builder: (context, state) => ForgotPasswordPage(),
+      ),
+
+      /// OTP Verification
+      GoRoute(
+        path: RoutePaths.otp,
+        builder: (context, state) => OtpPage(),
+      ),
+
+      /// Reset Password
+      GoRoute(
+        path: RoutePaths.resetPassword,
+        builder: (context, state) => ResetPasswordPage(),
+      ),
+      
+
+      /// Password Reset Success
+      GoRoute(
+        path: RoutePaths.resetSuccess,
+        builder: (context, state) => const PasswordResetSuccessPage(),
+      ),
+      
+/// Register
+      GoRoute(
+        path: RoutePaths.register,
+        builder: (context, state) => RegisterPage(),
+      ),
+
+      /// Verify Identity
+      GoRoute(
+        path: RoutePaths.verifyIdentity,
+        builder: (context, state) => const VerifyIdentityPage(),
+      ),
+
+      /// Set PIN
+      GoRoute(
+        path: RoutePaths.setPin,
+        builder: (context, state) => const SetPinPage(),
+      ),
+
+      /// Wallet Ready
+      GoRoute(
+        path: RoutePaths.walletReady,
+        builder: (context, state) => const WalletReadyPage(),
+      ),
+
+    ],
+  );
 }
