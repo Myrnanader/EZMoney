@@ -12,4 +12,9 @@ class RoutePaths {
   static const setPin = '/set-pin';
   static const walletReady = '/wallet-ready';
   static const home = '/home';
+  static const emptyWallet = '/empty-wallet';
+  static const addCard = '/add-card';
+  static const verifyCard = '/verify-card';
+  static const cardSuccess = '/card-success';
+  //static const mainNavigationPage = '/mainNavigationPage';
 }

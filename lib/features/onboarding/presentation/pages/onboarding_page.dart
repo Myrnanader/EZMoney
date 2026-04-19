@@ -1,4 +1,3 @@
-import 'package:dots_indicator/dots_indicator.dart';
 import 'package:e_wallet/core/routing/route_paths.dart';
 import 'package:e_wallet/features/onboarding/data/onboarding_data.dart';
 import 'package:e_wallet/shared/widgets/primary_button.dart';

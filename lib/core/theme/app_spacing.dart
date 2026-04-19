@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppSpacing {
-
   /// Height
   static final h4 = SizedBox(height: 4.h);
   static final h8 = SizedBox(height: 8.h);
@@ -21,5 +20,7 @@ class AppSpacing {
   static final w12 = SizedBox(width: 12.w);
   static final w16 = SizedBox(width: 16.w);
   static final w20 = SizedBox(width: 20.w);
+  static final w22 = SizedBox(width: 22.w);
+
   static final w24 = SizedBox(width: 24.w);
 }
