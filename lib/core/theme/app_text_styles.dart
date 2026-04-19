@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app_colors.dart';
 
 class AppTextStyles {
-
   /// Large Title
   static TextStyle heading1 = TextStyle(
     fontSize: 28.sp,
@@ -40,9 +39,15 @@ class AppTextStyles {
 
   /// Button text
   static TextStyle button = TextStyle(
-    fontSize: 16.sp,
+    fontSize: 18.sp,
     fontWeight: FontWeight.w600,
     color: AppColors.white,
   );
 
+  /// Card text
+  static TextStyle card = TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primary,
+  );
 }
