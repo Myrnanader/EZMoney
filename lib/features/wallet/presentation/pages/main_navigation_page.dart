@@ -1,5 +1,6 @@
 import 'package:e_wallet/core/theme/app_colors.dart';
 import 'package:e_wallet/features/wallet/presentation/pages/empty_wallet_page.dart';
+import 'package:e_wallet/features/wallet/presentation/pages/profile_page.dart';
 import 'package:e_wallet/features/wallet/presentation/pages/wallet_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -23,7 +24,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
     Center(child: Text("Groups")),
 
-    Center(child: Text("Profile")),
+    ProfilePage(),
   ];
 
   @override

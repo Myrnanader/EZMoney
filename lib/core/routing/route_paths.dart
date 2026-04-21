@@ -1,3 +1,5 @@
+import 'package:e_wallet/features/wallet/presentation/pages/profile_page.dart';
+
 class RoutePaths {
   static const splash = '/';
   static const onboarding = '/onboarding';
@@ -16,5 +18,6 @@ class RoutePaths {
   static const addCard = '/add-card';
   static const verifyCard = '/verify-card';
   static const cardSuccess = '/card-success';
+  //static const profilePage = '/profile-page';
   //static const mainNavigationPage = '/mainNavigationPage';
 }
