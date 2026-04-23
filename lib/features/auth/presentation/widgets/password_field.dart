@@ -5,13 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PasswordField extends StatefulWidget {
   final TextEditingController controller;
-  final String? Function(String?)? validator;
   final String label;
 
   const PasswordField({
     super.key,
     required this.controller,
-    this.validator,
     this.label = "Password",
   });
 
@@ -20,45 +18,27 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordFieldState extends State<PasswordField> {
-
   bool obscure = true;
 
   @override
   Widget build(BuildContext context) {
-
     return AuthTextField(
-
       label: widget.label,
-
       hint: "••••••••",
-
       controller: widget.controller,
-
-      validator: widget.validator,
-
       obscureText: obscure,
-
-      /// PREFIX ICON
       prefixIcon: Icon(
         Icons.lock_outline,
         size: 22.sp,
         color: AppColors.primary,
       ),
-
-      /// SUFFIX ICON
       suffixIcon: IconButton(
         icon: Icon(
-          obscure
-              ? Icons.visibility_outlined
-              : Icons.visibility_off_outlined,
+          obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           size: 20.sp,
           color: AppColors.grey,
         ),
-        onPressed: () {
-          setState(() {
-            obscure = !obscure;
-          });
-        },
+        onPressed: () => setState(() => obscure = !obscure),
       ),
     );
   }

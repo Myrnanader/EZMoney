@@ -1,22 +1,13 @@
-import 'package:equatable/equatable.dart';
+part of 'app_cubit.dart';
 
-enum AppStatus {
-  initial,
-  authenticated,
-  unauthenticated,
-}
+abstract class AppState {}
 
-class AppState extends Equatable {
-  final AppStatus status;
+class AppInitial extends AppState {}
 
-  const AppState({this.status = AppStatus.initial});
+class AppLoading extends AppState {}
 
-  AppState copyWith({AppStatus? status}) {
-    return AppState(
-      status: status ?? this.status,
-    );
-  }
+class AppAuthenticated extends AppState {}
 
-  @override
-  List<Object> get props => [status];
-}
+class AppUnauthenticated extends AppState {}
+
+class AppFirstTime extends AppState {}

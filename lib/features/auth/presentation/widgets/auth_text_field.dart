@@ -8,75 +8,55 @@ class AuthTextField extends StatelessWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
-  final String? Function(String?)? validator;
-
   final Widget? prefixIcon;
   final Widget? suffixIcon;
-
   final bool obscureText;
+  final TextInputType? keyboardType;
 
   const AuthTextField({
     super.key,
     required this.label,
     required this.hint,
     required this.controller,
-    this.validator,
     this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,
+    this.keyboardType,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 18.w,
-        vertical: 12.h,
-      ),
-
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(AppRadius.r24),
-        border: Border.all(
-          color: AppColors.lightGrey,
-        ),
+        border: Border.all(color: AppColors.lightGrey),
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          /// LABEL
           Text(
             label.toUpperCase(),
             style: AppTextStyles.caption.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-
           SizedBox(height: 6.h),
-
-          /// INPUT ROW
           Row(
             children: [
-
-              /// PREFIX ICON
               if (prefixIcon != null) ...[
                 prefixIcon!,
                 SizedBox(width: 10.w),
               ],
-
-              /// TEXT FIELD
               Expanded(
-                child: TextFormField(
+                child: TextField(
                   controller: controller,
-                  validator: validator,
                   obscureText: obscureText,
-
+                  keyboardType: keyboardType,
                   style: AppTextStyles.body.copyWith(
                     color: AppColors.textPrimary,
                   ),
-
                   decoration: InputDecoration(
                     hintText: hint,
                     hintStyle: AppTextStyles.body.copyWith(
@@ -88,8 +68,6 @@ class AuthTextField extends StatelessWidget {
                   ),
                 ),
               ),
-
-              /// SUFFIX ICON
               ?suffixIcon,
             ],
           ),

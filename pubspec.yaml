@@ -52,6 +52,7 @@ dependencies:
   retrofit: ^4.9.2
   json_annotation: ^4.11.0
   get_it: ^9.2.1
+  flutter_windowmanager: ^0.2.0
   
   
   

@@ -1,4 +1,6 @@
+import 'package:e_wallet/core/di/di.dart';
 import 'package:e_wallet/core/routing/route_paths.dart';
+import 'package:e_wallet/core/services/secure_storage_service.dart';
 import 'package:e_wallet/features/onboarding/data/onboarding_data.dart';
 import 'package:e_wallet/shared/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -96,8 +98,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: PrimaryButton(
                 text: isLastPage ? "Get Started" : "Next",
 
-                onPressed: () {
+                onPressed: () async {
                   if (isLastPage) {
+                    ///  هنا نحفظ إنه شاف onboarding
+                    await sl<SecureStorageService>().setOnboardingSeen();
                     context.go(RoutePaths.login);
                   } else {
                     controller.nextPage(
