@@ -1,113 +1,10 @@
-/*import 'package:e_wallet/core/routing/route_paths.dart';
-import 'package:e_wallet/core/theme/app_colors.dart';
-import 'package:e_wallet/core/theme/app_spacing.dart';
-import 'package:e_wallet/core/theme/app_text_styles.dart';
-import 'package:e_wallet/features/auth/presentation/widgets/auth_title_section.dart';
-import 'package:e_wallet/shared/widgets/app_appbar.dart';
-import 'package:e_wallet/shared/widgets/primary_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:e_wallet/features/auth/presentation/widgets/otp_input.dart';
-import 'package:e_wallet/features/auth/presentation/widgets/otp_timer.dart';
-
-class OtpPage extends StatelessWidget {
-  const OtpPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-
-      appBar: const AppAppBar(title: "Verification"),
-
-      body: SafeArea(
-        child: LayoutBuilder(
-
-          builder: (context, constraints) {
-
-            return SingleChildScrollView(
-
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-
-                child: IntrinsicHeight(
-
-                  child: Column(
-                    children: [
-
-                      AppSpacing.h32,
-
-                      /// HEADER
-                      const AuthTitleSection(
-                        icon: Icons.mark_email_unread_outlined,
-                        title: "Verify your email",
-                        description:
-                        "Enter the 6-digit code we sent to\nyour email address.",
-                      ),
-
-                      AppSpacing.h40,
-
-                      /// OTP INPUT
-                      OtpInput(
-                        onCompleted: (value) {
-                          // verify otp
-                        },
-                      ),
-
-                      AppSpacing.h16,
-
-                      /// TIMER
-                      const OtpTimer(time: "00:54"),
-
-                      const Spacer(),
-
-                      /// VERIFY BUTTON
-                      PrimaryButton(
-                        text: "Verify Code",
-                        onPressed: () {
-                          context.push(RoutePaths.resetPassword);
-                        },
-                      ),
-
-                      AppSpacing.h24,
-
-                      /// RESEND
-                      TextButton(
-                        onPressed: () {},
-
-                        child: Text(
-                          "Resend code",
-                          style: AppTextStyles.body.copyWith(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-
-                      AppSpacing.h32,
-
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}*/
 import 'package:e_wallet/core/routing/route_paths.dart';
 import 'package:e_wallet/core/theme/app_colors.dart';
 import 'package:e_wallet/core/theme/app_spacing.dart';
 import 'package:e_wallet/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:e_wallet/features/auth/presentation/widgets/auth_title_section.dart';
 import 'package:e_wallet/shared/widgets/app_appbar.dart';
+import 'package:e_wallet/shared/widgets/app_snackbar.dart';
 import 'package:e_wallet/shared/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -133,13 +30,9 @@ class _OtpPageState extends State<OtpPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        // ✅ FIX: OTP register → context.go لـ setPin
         if (state is OtpVerifiedForRegister) {
-          if (context.mounted) {
-            context.go(RoutePaths.setPin);
-          }
+          if (context.mounted) context.go(RoutePaths.setPin);
         }
-
         if (state is OtpVerifiedForReset) {
           if (context.mounted) {
             context.go(
@@ -148,63 +41,56 @@ class _OtpPageState extends State<OtpPage> {
             );
           }
         }
-
         if (state is AuthOtpResent) {
-          // ✅ FIX: mounted check
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("OTP sent again")),
+            AppSnackBar.show(
+              context,
+              message: "Code sent successfully",
+              type: SnackBarType.success,
             );
           }
         }
-
         if (state is AuthError) {
-          // ✅ FIX: mounted check
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        }
-      },
+  if (context.mounted) {
+    AppSnackBar.show(context, message: state.message);
 
+    //  لو الايميل مش موجود → ارجع للـ register
+    final msg = state.message.toLowerCase();
+    if (msg.contains("not registered") || msg.contains("not found")) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (context.mounted) context.go(RoutePaths.register);
+      });
+    }
+  }
+}
+      },
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: const AppAppBar(title: "Verification"),
-
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
-
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
-
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
                         AppSpacing.h32,
-
                         const AuthTitleSection(
                           icon: Icons.mark_email_unread_outlined,
                           title: "Verify your email",
                           description:
                               "Enter the 6-digit code we sent to\nyour email address.",
                         ),
-
                         AppSpacing.h40,
-
                         OtpInput(
                           onCompleted: (value) {
-                            setState(() {
-                              otpCode = value;
-                            });
+                            setState(() => otpCode = value);
                           },
                         ),
-
                         AppSpacing.h16,
-
                         ResendOtpSection(
                           onResend: () {
                             context.read<AuthCubit>().resendOtp(
@@ -213,13 +99,10 @@ class _OtpPageState extends State<OtpPage> {
                             );
                           },
                         ),
-
                         const Spacer(),
-
                         BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, state) {
                             final isLoading = state is AuthLoading;
-
                             return PrimaryButton(
                               text: isLoading ? "Verifying..." : "Verify Code",
                               onPressed: isLoading || otpCode.length != 6
@@ -234,7 +117,6 @@ class _OtpPageState extends State<OtpPage> {
                             );
                           },
                         ),
-
                         AppSpacing.h32,
                       ],
                     ),

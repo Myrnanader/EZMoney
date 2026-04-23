@@ -32,7 +32,6 @@ class _SetPinPageState extends State<SetPinPage> {
   @override
   void initState() {
     super.initState();
-    // نفتح الكيبورد أوتوماتيك
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -49,12 +48,10 @@ class _SetPinPageState extends State<SetPinPage> {
     final isLoading = context.read<AuthCubit>().state is AuthLoading;
     if (isLoading) return;
 
-    // نمسح الـ controller دايماً عشان نتحكم إحنا
     _hiddenController.clear();
 
     if (!isConfirming) {
       if (value.isEmpty) {
-        // backspace
         if (pin.isEmpty) return;
         setState(() => pin = pin.substring(0, pin.length - 1));
       } else {
@@ -73,7 +70,6 @@ class _SetPinPageState extends State<SetPinPage> {
       }
     } else {
       if (value.isEmpty) {
-        // backspace
         if (confirmPin.isEmpty) return;
         setState(() => confirmPin = confirmPin.substring(0, confirmPin.length - 1));
       } else {
@@ -106,15 +102,10 @@ class _SetPinPageState extends State<SetPinPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
-          context.go(RoutePaths.walletReady);
-        }
-        if (state is AuthError) {
-          AppSnackBar.show(context, message: state.message);
-        }
+        if (state is AuthSuccess) context.go(RoutePaths.walletReady);
+        if (state is AuthError) AppSnackBar.show(context, message: state.message);
       },
       child: GestureDetector(
-        // لو حد ضغط على الشاشة يفتح الكيبورد تاني
         onTap: () => _focusNode.requestFocus(),
         child: Scaffold(
           backgroundColor: AppColors.background,
@@ -123,24 +114,16 @@ class _SetPinPageState extends State<SetPinPage> {
             child: Column(
               children: [
                 AppSpacing.h32,
-
-                /// HEADER
                 AuthHeader(
                   title: isConfirming ? "Confirm your PIN" : "Set your 4-digit PIN",
                   subtitle: "This PIN will be used to confirm your payments and transfers securely.",
                 ),
-
                 AppSpacing.h40,
-
-                /// PIN DOTS
                 PinDots(
                   length: pinLength,
                   filled: isConfirming ? confirmPin.length : pin.length,
                 ),
-
                 const Spacer(),
-
-                /// LOADING
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
                     if (state is AuthLoading) {
@@ -149,13 +132,8 @@ class _SetPinPageState extends State<SetPinPage> {
                     return const SizedBox();
                   },
                 ),
-
-                /// ENCRYPTION TEXT
                 const EncryptionLabel(),
-
                 AppSpacing.h32,
-
-                /// ✅ TextField مخفي - كيبورد الجهاز بالأرقام
                 SizedBox(
                   height: 1,
                   width: 1,
