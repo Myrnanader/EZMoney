@@ -133,33 +133,38 @@ class _OtpPageState extends State<OtpPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        print("OTP STATE => $state"); //  debug مهم
-
+        // ✅ FIX: OTP register → context.go لـ setPin
         if (state is OtpVerifiedForRegister) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
             context.go(RoutePaths.setPin);
-          });
+          }
         }
 
         if (state is OtpVerifiedForReset) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
             context.go(
               RoutePaths.resetPassword,
               extra: {"email": widget.email, "token": state.token},
             );
-          });
+          }
         }
 
         if (state is AuthOtpResent) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("OTP sent again")));
+          // ✅ FIX: mounted check
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("OTP sent again")),
+            );
+          }
         }
 
         if (state is AuthError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          // ✅ FIX: mounted check
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
         }
       },
 
@@ -181,7 +186,6 @@ class _OtpPageState extends State<OtpPage> {
                       children: [
                         AppSpacing.h32,
 
-                        /// HEADER
                         const AuthTitleSection(
                           icon: Icons.mark_email_unread_outlined,
                           title: "Verify your email",
@@ -191,16 +195,16 @@ class _OtpPageState extends State<OtpPage> {
 
                         AppSpacing.h40,
 
-                        /// OTP INPUT
                         OtpInput(
                           onCompleted: (value) {
-                            otpCode = value;
+                            setState(() {
+                              otpCode = value;
+                            });
                           },
                         ),
 
                         AppSpacing.h16,
 
-                        ///  RESEND + TIMER
                         ResendOtpSection(
                           onResend: () {
                             context.read<AuthCubit>().resendOtp(
@@ -212,7 +216,6 @@ class _OtpPageState extends State<OtpPage> {
 
                         const Spacer(),
 
-                        /// VERIFY BUTTON
                         BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, state) {
                             final isLoading = state is AuthLoading;

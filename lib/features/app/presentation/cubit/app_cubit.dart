@@ -8,52 +8,33 @@ class AppCubit extends Cubit<AppState> {
 
   AppCubit(this.storage) : super(AppInitial());
 
-  ///  check auth
   Future<void> checkAuth() async {
     emit(AppLoading());
 
     final token = await storage.read("token");
     final seenOnboarding = await storage.hasSeenOnboarding();
 
-    print("TOKEN: $token");
-
-    ///  لو فيه توكن → تحقق من السيرفر
     if (token != null && token.isNotEmpty) {
-      try {
-        ///  لازم يكون عندك API زي /me أو /profile
-        /// استبدل دي بالـ API بتاعك
-        // await api.getProfile();
-
-        /// مؤقتًا (لو مفيش endpoint)
-        await Future.delayed(const Duration(milliseconds: 300));
-
-        print("STATE → Authenticated");
-        emit(AppAuthenticated());
-        return;
-      } catch (e) {
-        ///  التوكن invalid أو السيرفر مسحه
-        print("TOKEN INVALID → deleting");
-
-        await storage.deleteToken();
-
-        emit(AppUnauthenticated());
-        return;
-      }
+      emit(AppAuthenticated());
+      return;
     }
 
-    ///  أول مرة
     if (!seenOnboarding) {
       emit(AppFirstTime());
       return;
     }
 
-    ///  مش لوجين
     emit(AppUnauthenticated());
   }
 
-  ///  logout
+  //  FIX: logout مباشر بدون checkAuth
   Future<void> logout() async {
     await storage.deleteToken();
     emit(AppUnauthenticated());
+  }
+
+  //  FIX: بعد register OTP verified → authenticated مباشرة
+  void setAuthenticated() {
+    emit(AppAuthenticated());
   }
 }

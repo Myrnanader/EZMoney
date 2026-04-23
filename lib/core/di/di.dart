@@ -13,29 +13,31 @@ import '../services/secure_storage_service.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  /// CORE
+  // CORE
   sl.registerLazySingleton(() => SecureStorageService());
 
   sl.registerLazySingleton<Dio>(
     () => DioHelper.getDio(sl()),
   );
 
-  /// API
+  // API
   sl.registerLazySingleton<AuthApiService>(
     () => AuthApiService(sl()),
   );
 
-  /// LOCAL
+  // LOCAL
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSource(sl()),
   );
 
-  /// REPO
+  // REPO
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(sl(), sl()),
   );
 
-  /// CUBITS
+  //  AppCubit → Singleton عشان نفس الـ instance في كل حتة
+  sl.registerLazySingleton(() => AppCubit(sl()));
+
+  //  AuthCubit → Factory عادي (محتاج instance جديد كل login screen)
   sl.registerFactory(() => AuthCubit(sl()));
-  sl.registerFactory(() => AppCubit(sl()));
 }

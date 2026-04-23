@@ -20,7 +20,8 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await repo.login(identifier, password);
 
-      await sl<AppCubit>().checkAuth();
+      // ✅ FIX: نعمل AppAuthenticated مباشرة بدل checkAuth
+      sl<AppCubit>().setAuthenticated();
 
       emit(LoginSuccess());
     } catch (e) {
@@ -50,6 +51,8 @@ class AuthCubit extends Cubit<AuthState> {
       final result = await repo.verifyOtp(email: email, otp: otp, type: type);
 
       if (result.isRegister) {
+        // ✅ FIX: نعمل AppAuthenticated الأول عشان الـ Router Guard يسمح بالـ navigation
+        sl<AppCubit>().setAuthenticated();
         emit(OtpVerifiedForRegister());
       }
 
@@ -113,10 +116,6 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repo.verifyPin(pin);
-
-      ///  بعد التحقق من PIN → فعل المستخدم
-      await sl<AppCubit>().checkAuth();
-
       emit(AuthSuccess());
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -128,10 +127,13 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repo.logout();
-      await sl<AppCubit>().checkAuth();
+      //  FIX: نكلم AppCubit.logout() مباشرة (نفس الـ instance)
+      await sl<AppCubit>().logout();
       emit(AuthInitial());
     } catch (e) {
-      emit(AuthError(e.toString()));
+      // حتى لو في error → نعمل logout محلي
+      await sl<AppCubit>().logout();
+      emit(AuthInitial());
     }
   }
 }

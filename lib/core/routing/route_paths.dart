@@ -1,4 +1,3 @@
-import 'package:e_wallet/features/wallet/presentation/pages/profile_page.dart';
 
 class RoutePaths {
   static const splash = '/';

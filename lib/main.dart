@@ -10,11 +10,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
 
+  // sl<AppCubit>() هنا هيرجع نفس الـ instance في كل حتة
+  final appCubit = sl<AppCubit>()..checkAuth();
+
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider.value(value: appCubit),
         BlocProvider(create: (_) => sl<AuthCubit>()),
-        BlocProvider(create: (_) => sl<AppCubit>()..checkAuth()),
       ],
       child: const EZMoneyApp(),
     ),

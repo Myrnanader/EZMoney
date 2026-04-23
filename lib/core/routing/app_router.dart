@@ -177,15 +177,19 @@ class AppRouter {
   static GoRouter createRouter(AppCubit appCubit) {
     return GoRouter(
       initialLocation: RoutePaths.splash,
-
-      /// 🔥 يخلي router reactive
       refreshListenable: GoRouterRefreshStream(appCubit.stream),
 
-      /// 🔐 AUTH GUARD
       redirect: (context, state) {
-        final isLoggedIn = appCubit.state is AppAuthenticated;
+        final appState = appCubit.state;
+        final isLoggedIn = appState is AppAuthenticated;
+        final isLoading = appState is AppLoading || appState is AppInitial;
+        final currentPath = state.matchedLocation;
 
-        final isPublicRoute = [
+        // ✅ لو لسه loading → ماتعملش redirect
+        if (isLoading) return null;
+
+        // ✅ المسارات العامة (مش محتاجة login)
+        final publicRoutes = [
           RoutePaths.splash,
           RoutePaths.onboarding,
           RoutePaths.welcome,
@@ -194,17 +198,26 @@ class AppRouter {
           RoutePaths.forgotPassword,
           RoutePaths.otp,
           RoutePaths.resetPassword,
+          RoutePaths.resetSuccess,
         ];
 
-        /// ❌ مش لوجين
-        if (!isLoggedIn &&
-            !isPublicRoute.contains(state.matchedLocation)) {
+        // ✅ المسارات اللي بعد login وقبل home (post-auth flow)
+        // دي محتاجة authenticated لكن مش home
+        final postAuthRoutes = [
+          RoutePaths.setPin,
+          RoutePaths.walletReady,
+        ];
+
+        final isPublicRoute = publicRoutes.contains(currentPath);
+        final isPostAuthRoute = postAuthRoutes.contains(currentPath);
+
+        // ✅ مش logged in + route محمي → روح login
+        if (!isLoggedIn && !isPublicRoute && !isPostAuthRoute) {
           return RoutePaths.login;
         }
 
-        /// ✅ لوجين → امنعه يرجع ل auth
-        if (isLoggedIn &&
-            isPublicRoute.contains(state.matchedLocation)) {
+        // ✅ logged in + public route (مش post-auth) → روح home
+        if (isLoggedIn && isPublicRoute) {
           return RoutePaths.home;
         }
 
@@ -212,25 +225,22 @@ class AppRouter {
       },
 
       routes: [
-        /// Splash
         GoRoute(
           path: RoutePaths.splash,
           builder: (context, state) => const SplashPage(),
         ),
 
-        /// Welcome
         GoRoute(
           path: RoutePaths.welcome,
           builder: (context, state) => const WelcomePage(),
         ),
 
-        /// Onboarding
         GoRoute(
           path: RoutePaths.onboarding,
           builder: (context, state) => const OnboardingPage(),
         ),
 
-        /// 🔥 Login (instance أساسي)
+        // ✅ Login → AuthCubit instance جديد هنا
         GoRoute(
           path: RoutePaths.login,
           builder: (context, state) {
@@ -241,7 +251,7 @@ class AppRouter {
           },
         ),
 
-        /// 🔥 Register (نفس instance من login)
+        // ✅ Register → نفس instance من AuthCubit
         GoRoute(
           path: RoutePaths.register,
           builder: (context, state) {
@@ -252,7 +262,6 @@ class AppRouter {
           },
         ),
 
-        /// Forgot Password
         GoRoute(
           path: RoutePaths.forgotPassword,
           builder: (context, state) {
@@ -263,12 +272,10 @@ class AppRouter {
           },
         ),
 
-        /// OTP
         GoRoute(
           path: RoutePaths.otp,
           builder: (context, state) {
             final data = state.extra as Map<String, dynamic>?;
-
             if (data == null) return const SplashPage();
 
             return BlocProvider.value(
@@ -281,12 +288,10 @@ class AppRouter {
           },
         ),
 
-        /// Reset Password
         GoRoute(
           path: RoutePaths.resetPassword,
           builder: (context, state) {
             final data = state.extra as Map<String, dynamic>?;
-
             if (data == null) return const SplashPage();
 
             return BlocProvider.value(
@@ -299,14 +304,12 @@ class AppRouter {
           },
         ),
 
-        /// Reset Success
         GoRoute(
           path: RoutePaths.resetSuccess,
-          builder: (context, state) =>
-              const PasswordResetSuccessPage(),
+          builder: (context, state) => const PasswordResetSuccessPage(),
         ),
 
-        /// Set PIN
+        // ✅ Set PIN → authenticated route
         GoRoute(
           path: RoutePaths.setPin,
           builder: (context, state) {
@@ -317,47 +320,38 @@ class AppRouter {
           },
         ),
 
-        /// Wallet Ready
         GoRoute(
           path: RoutePaths.walletReady,
-          builder: (context, state) =>
-              const WalletReadyPage(),
+          builder: (context, state) => const WalletReadyPage(),
         ),
 
-        /// Home
         GoRoute(
           path: RoutePaths.home,
-          builder: (context, state) =>
-              const MainNavigationPage(),
+          builder: (context, state) => const MainNavigationPage(),
         ),
 
-        /// Wallet
         GoRoute(
           path: RoutePaths.emptyWallet,
           name: RouteNames.emptyWallet,
-          builder: (context, state) =>
-              const EmptyWalletPage(),
+          builder: (context, state) => const EmptyWalletPage(),
         ),
 
         GoRoute(
           path: RoutePaths.addCard,
           name: RouteNames.addCard,
-          builder: (context, state) =>
-              const AddCardPage(),
+          builder: (context, state) => const AddCardPage(),
         ),
 
         GoRoute(
           path: RoutePaths.verifyCard,
           name: RouteNames.verifyCard,
-          builder: (context, state) =>
-              const VerifyCardPage(),
+          builder: (context, state) => const VerifyCardPage(),
         ),
 
         GoRoute(
           path: RoutePaths.cardSuccess,
           name: RouteNames.cardSuccess,
-          builder: (context, state) =>
-              const CardSuccessPage(),
+          builder: (context, state) => const CardSuccessPage(),
         ),
       ],
     );
