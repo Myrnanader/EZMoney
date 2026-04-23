@@ -68,7 +68,7 @@ class AuthTextField extends StatelessWidget {
                   ),
                 ),
               ),
-              if (suffixIcon != null) suffixIcon!,
+              ?suffixIcon,
             ],
           ),
         ],
